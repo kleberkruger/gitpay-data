@@ -61,7 +61,7 @@ public class ContaGitPay implements ContaBancaria {
     }
 
     @Override
-    public String getDocumentoTitular() {
+    public String getDocTitular() {
         return usuario.getDocumento();
     }
 

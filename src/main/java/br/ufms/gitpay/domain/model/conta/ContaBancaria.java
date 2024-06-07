@@ -6,6 +6,10 @@ public interface ContaBancaria {
 
     int getBanco();
 
+    default String getBancoFormatado() {
+        return String.format("%03d", getBanco());
+    }
+
     int getAgencia();
 
     int getNumero();
@@ -16,11 +20,11 @@ public interface ContaBancaria {
         return getNumero() + "-" + getDigito();
     }
 
-    default String getNumeroTipo() {
-        return getNumero() + "-" + getTipo().getAbreviacao();
+    default DadosConta getDadosConta() {
+        return new DadosConta(getTipo(), getBanco(), getAgencia(), getNumero(), getDigito());
     }
 
     String getNomeTitular();
 
-    String getDocumentoTitular();
+    String getDocTitular();
 }

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gitpay.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gitpay.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gitpay.test.iml" filepath="$PROJECT_DIR$/.idea/modules/gitpay.test.iml" />
     </modules>
   </component>
 </project>

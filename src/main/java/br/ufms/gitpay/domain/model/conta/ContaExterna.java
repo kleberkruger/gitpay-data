@@ -52,7 +52,7 @@ public class ContaExterna implements ContaBancaria {
     }
 
     @Override
-    public String getDocumentoTitular() {
+    public String getDocTitular() {
         return documentoTitular;
     }
 }
