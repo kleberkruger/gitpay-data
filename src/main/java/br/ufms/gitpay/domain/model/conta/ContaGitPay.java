@@ -18,11 +18,16 @@ public class ContaGitPay implements ContaBancaria {
     private double limite;
     private final Map<TipoInvestimento, Double> saldoInvestimentos;
 
+    public ContaGitPay(Usuario<? extends Pessoa> usuario) {
+        this(0, usuario);
+    }
+
     public ContaGitPay(int numero, Usuario<? extends Pessoa> usuario) {
         this.numero = numero;
         this.digito = digitoVerificador(numero);
         this.usuario = usuario;
-        this.limite = 0.0;
+        this.saldo = 0.00;
+        this.limite = 0.00;
         this.saldoInvestimentos = new HashMap<>();
     }
 

@@ -1,5 +1,6 @@
 package br.ufms.gitpay.data.firebase.repository;
 
+import br.ufms.gitpay.data.repository.ContaExternaRepository;
 import br.ufms.gitpay.domain.model.banco.Banco;
 import br.ufms.gitpay.domain.model.conta.*;
 import com.google.cloud.firestore.DocumentSnapshot;
@@ -7,7 +8,7 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class ContaExternaFirestoreRepository extends ContaFirestoreRepository<ContaExterna> {
+public class ContaExternaFirestoreRepository extends ContaFirestoreRepository<ContaExterna> implements ContaExternaRepository {
 
     public ContaExternaFirestoreRepository(int banco) {
         super(banco);

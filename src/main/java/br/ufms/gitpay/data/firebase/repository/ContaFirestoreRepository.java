@@ -1,10 +1,14 @@
 package br.ufms.gitpay.data.firebase.repository;
 
+import br.ufms.gitpay.data.repository.Repository;
 import br.ufms.gitpay.domain.model.conta.*;
+import com.google.cloud.firestore.CollectionReference;
 
 import java.util.*;
 
 public abstract class ContaFirestoreRepository<C extends ContaBancaria> extends FirestoreRepository<C, DadosConta> {
+
+    public static final String COLLECTION_NAME = "contas";
 
     protected ContaFirestoreRepository(int banco) {
         super("bancos/" + String.format("%03d", banco) + "/contas");
@@ -13,6 +17,12 @@ public abstract class ContaFirestoreRepository<C extends ContaBancaria> extends 
     @Override
     protected Optional<String> getId(C conta) {
         return Optional.of(conta.getNumero() + "-" + conta.getTipo().getAbreviacao());
+    }
+
+    @Override
+    protected CollectionReference getCollection(C c) {
+        return db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(c.getBancoFormatado())
+                .collection(COLLECTION_NAME);
     }
 
     @Override

@@ -1,8 +1,6 @@
 package br.ufms.gitpay.domain.service;
 
-import br.ufms.gitpay.data.repository.BancoRepository;
-import br.ufms.gitpay.data.repository.ChavePixRepository;
-import br.ufms.gitpay.data.repository.ContaRepository;
+import br.ufms.gitpay.data.repository.*;
 import br.ufms.gitpay.domain.model.banco.Banco;
 import br.ufms.gitpay.domain.model.conta.ChavePix;
 import br.ufms.gitpay.domain.model.conta.ContaBancaria;
@@ -15,28 +13,22 @@ import java.util.concurrent.CompletableFuture;
 
 public class BancoService {
 
-    private final BancoRepository bancoRepository;
-    private final ChavePixRepository chavePixRepository;
-    private final ContaRepository contaRepository;
+    private final Repositories repositories;
 
-    public BancoService(BancoRepository bancoRepository, ContaRepository contaRepository,
-                        ChavePixRepository chavePixRepository) {
-        this.bancoRepository = bancoRepository;
-        this.contaRepository = contaRepository;
-        this.chavePixRepository = chavePixRepository;
+    public BancoService(Repositories repositories) {
+        this.repositories = repositories;
     }
 
     public CompletableFuture<Optional<Banco>> getBanco(int codigo) {
-        return bancoRepository.get(codigo);
+        return repositories.getBancoRepository().get(codigo);
     }
 
     public CompletableFuture<Collection<Banco>> getBancos() {
-        return bancoRepository.getAll();
+        return repositories.getBancoRepository().getAll();
     }
 
     public CompletableFuture<Optional<ContaBancaria>> getConta(String chavePix) {
-//        return chavePixRepository.get(chavePix).thenApply(chavePixOpt -> chavePixOpt.map(ChavePix::getDadosConta));
-        return null;
+        return repositories.getChavePixRepository().get(chavePix).thenApply(chavePixOpt -> chavePixOpt.map(ChavePix::getContaBancaria));
     }
 
     public CompletableFuture<Optional<ContaBancaria>> getConta(int numero, int digito) {
@@ -44,6 +36,11 @@ public class BancoService {
     }
 
     public CompletableFuture<Optional<ContaBancaria>> getConta(DadosConta dadosConta) {
-        return null;
+        var contaRepository = repositories.getContaRepository(dadosConta.banco());
+        if (dadosConta.banco() != Banco.GitPay.getCodigo()) {
+            contaRepository.get(dadosConta);
+        }
+
+        return contaRepository.get(dadosConta).thenApply(contaGitPay -> Optional.of(contaGitPay.get()));
     }
 }

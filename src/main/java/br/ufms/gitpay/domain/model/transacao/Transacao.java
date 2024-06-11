@@ -1,5 +1,7 @@
 package br.ufms.gitpay.domain.model.transacao;
 
+import br.ufms.gitpay.domain.model.conta.ContaBancaria;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -8,6 +10,7 @@ public abstract class Transacao {
     private final String id;
     private final double valor;
     private final LocalDateTime dataHora;
+//    private final ContaBancaria contaRef;
 
     protected Transacao(double valor) {
         this(null, valor, null);

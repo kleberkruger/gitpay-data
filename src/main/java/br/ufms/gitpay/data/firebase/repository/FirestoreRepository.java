@@ -6,14 +6,13 @@ import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.cloud.Timestamp;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.*;
 
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class FirestoreRepository<Entity, Id> implements Repository<Entity, Id> {
@@ -46,10 +45,22 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
         return id.isEmpty() ? add(entity) : update(id.get(), entity);
     }
 
+    protected DocumentReference save(Transaction transaction, Entity entity) {
+        var id = getId(entity);
+        var entityRef = id.map(s -> db.collection(collectionName).document(s))
+                .orElseGet(() -> db.collection(collectionName).document());
+        transaction.create(entityRef, entityToMap(entity));
+        return entityRef;
+    }
+
     @Override
     public CompletableFuture<Void> delete(Id id) {
         return toCompletableFuture(db.collection(collectionName).document(idToStr(id)).delete())
                 .thenApply(writeResult -> null);
+    }
+
+    protected void delete(Transaction transaction, Id id) {
+        transaction.delete(db.collection(collectionName).document(idToStr(id)));
     }
 
     protected CompletableFuture<Optional<Entity>> get(DocumentReference docRef) {
@@ -93,6 +104,14 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
         return completableFuture;
     }
 
+    public <T extends DocumentReference> CompletableFuture<DocumentSnapshot> runTransaction(Function<Void, T> action) {
+//        System.out.println("executando a transação");
+//        return toCompletableFuture(db.runTransaction(t -> action.apply(null)));
+
+        return toCompletableFuture(db.runTransaction(t -> action.apply(null)))
+                .thenCompose(resultRef -> toCompletableFuture(resultRef.get()));
+    }
+
     protected int toInt(Long value) {
         return Math.toIntExact(Objects.requireNonNull(value));
     }
@@ -112,6 +131,10 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
         return toZonedDateTime(timestamp).toLocalDateTime();
     }
 
+//    protected LocalDateTime toLocalDateTime(Timestamp timestamp) {
+//        return LocalDateTime.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos(), ZoneOffset.UTC);
+//    }
+
     public Date toDate(LocalDate dateToConvert) {
         return Date.from(dateToConvert.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
@@ -121,6 +144,8 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
     }
 
     protected abstract Optional<String> getId(Entity entity);
+
+    protected abstract CollectionReference getCollection(Entity entity);
 
     protected String idToStr(Id id) {
         return String.valueOf(id);

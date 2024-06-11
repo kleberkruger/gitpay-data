@@ -2,22 +2,19 @@ package br.ufms.gitpay.domain.service;
 
 import br.ufms.gitpay.data.repository.BancoRepository;
 import br.ufms.gitpay.data.repository.ChavePixRepository;
-import br.ufms.gitpay.data.repository.ContaRepository;
+import br.ufms.gitpay.data.repository.ContaExternaRepository;
 import br.ufms.gitpay.domain.model.banco.Banco;
-import br.ufms.gitpay.domain.model.conta.ChavePix;
-import br.ufms.gitpay.domain.model.conta.ContaBancaria;
-import br.ufms.gitpay.domain.model.conta.DadosConta;
-import br.ufms.gitpay.domain.model.conta.TipoConta;
+import br.ufms.gitpay.domain.model.conta.*;
 
 import java.util.concurrent.CompletableFuture;
 
 public class FakeService {
 
     private final BancoRepository bancoRepository;
-    private final ContaRepository contaRepository;
+    private final ContaExternaRepository contaRepository;
     private final ChavePixRepository chavePixRepository;
 
-    public FakeService(BancoRepository bancoRepository, ContaRepository contaRepository,
+    public FakeService(BancoRepository bancoRepository, ContaExternaRepository contaRepository,
                        ChavePixRepository chavePixRepository) {
 
         this.bancoRepository = bancoRepository;
@@ -33,7 +30,7 @@ public class FakeService {
         return bancoRepository.delete(codigo);
     }
 
-    public CompletableFuture<ContaBancaria> adicionarConta(ContaBancaria conta) {
+    public CompletableFuture<ContaExterna> adicionarConta(ContaExterna conta) {
         return contaRepository.save(conta);
     }
 

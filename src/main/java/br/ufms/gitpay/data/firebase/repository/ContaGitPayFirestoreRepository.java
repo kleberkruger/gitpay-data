@@ -1,17 +1,22 @@
 package br.ufms.gitpay.data.firebase.repository;
 
+import br.ufms.gitpay.data.repository.ContaGitPayRepository;
 import br.ufms.gitpay.domain.model.banco.Banco;
 import br.ufms.gitpay.domain.model.conta.ContaGitPay;
+import br.ufms.gitpay.domain.model.conta.DadosConta;
 import br.ufms.gitpay.domain.model.usuario.Pessoa;
 import br.ufms.gitpay.domain.model.usuario.Usuario;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Transaction;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-public class ContaGitPayFirestoreRepository extends ContaFirestoreRepository<ContaGitPay> {
+public class ContaGitPayFirestoreRepository extends ContaFirestoreRepository<ContaGitPay> implements ContaGitPayRepository {
 
     public ContaGitPayFirestoreRepository() {
         super(Banco.GitPay.getCodigo());
@@ -20,6 +25,66 @@ public class ContaGitPayFirestoreRepository extends ContaFirestoreRepository<Con
     private DocumentReference getUsuarioRef(Usuario<? extends Pessoa> usuario) {
         return db.collection("bancos/" + Banco.GitPay.getCodigoFormatado() + "/usuarios")
                 .document(usuario.getDocumento());
+    }
+
+    private CompletableFuture<Integer> getProximoNumeroConta(Transaction transaction) {
+        var bancoRef = db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado());
+        var indiceConta = "indiceConta";
+
+        return toCompletableFuture(transaction.get(bancoRef))
+                .thenApply(documentSnapshot -> documentSnapshot.contains(indiceConta) ?
+                        Math.toIntExact(Objects.requireNonNull(documentSnapshot.getLong(indiceConta))) : 0)
+                .thenApply(numero -> {
+                    transaction.update(bancoRef, indiceConta, ++numero);
+                    return numero;
+                });
+    }
+
+    private int getNumeroConta(Transaction transaction) throws ExecutionException, InterruptedException {
+        var campo = "indiceConta";
+        var bancoRef = db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado());
+        var doc = transaction.get(bancoRef).get();
+        var numero = doc.contains(campo) ? Math.toIntExact(Objects.requireNonNull(doc.getLong(campo))) : 0;
+        transaction.update(bancoRef, campo, ++numero);
+        return numero;
+    }
+
+    @Override
+    public CompletableFuture<ContaGitPay> save(ContaGitPay contaGitPay) {
+        return toCompletableFuture(db.runTransaction(transaction -> {
+            var numeroConta = getNumeroConta(transaction);
+            var contaRef = db.collection(collectionName).document(numeroConta + "-pg");
+            new UsuarioFirestoreRepository().save(transaction, contaGitPay.getUsuario());
+            transaction.create(contaRef, entityToMap(contaGitPay));
+            transaction.update(contaRef, "numero", numeroConta);
+            return contaRef;
+        })).thenCompose(contaRef -> toCompletableFuture(contaRef.get()).thenCompose(this::documentToEntity));
+
+
+//        return toCompletableFuture(db.runTransaction(transaction -> {
+//            new UsuarioFirestoreRepository().save(transaction, contaGitPay.getUsuario());
+//            var contaRef = db.collection(collectionName).document(idToStr(contaGitPay.getDadosConta()));
+//            transaction.create(contaRef, entityToMap(contaGitPay));
+//            transaction.update(contaRef, "numero", 5);
+//            return contaRef;
+//        })).thenCompose(transRef -> toCompletableFuture(transRef.get()).thenCompose(this::documentToEntity));
+    }
+
+    @Override
+    public CompletableFuture<Void> delete(DadosConta dadosConta) {
+//        return toCompletableFuture(db.recursiveDelete(db.collection(collectionName).document(idToStr(dadosConta))));
+
+        return get(dadosConta).thenCompose(conta -> {
+            if (conta.isPresent()) {
+                return toCompletableFuture(db.runTransaction(transaction -> {
+                    new UsuarioFirestoreRepository().delete(transaction, conta.get().getUsuario().getDocumento());
+                    transaction.delete(db.collection(collectionName).document(idToStr(dadosConta)));
+                    return null;
+                }));
+            } else {
+                return CompletableFuture.completedFuture(null);
+            }
+        });
     }
 
     @Override

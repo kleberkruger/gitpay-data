@@ -9,7 +9,7 @@ public class Transferencia extends Transacao {
     private final ContaBancaria origem;
     private final ContaBancaria destino;
 
-    public Transferencia(double valor, ContaBancaria origem, ContaBancaria destino) {
+    public Transferencia(ContaBancaria origem, ContaBancaria destino, double valor) {
         this(null, origem, destino, valor, null);
     }
 

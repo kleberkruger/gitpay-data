@@ -6,25 +6,29 @@ public interface ContaBancaria {
 
     int getBanco();
 
-    default String getBancoFormatado() {
-        return String.format("%03d", getBanco());
-    }
-
     int getAgencia();
 
     int getNumero();
 
     int getDigito();
 
+    String getNomeTitular();
+
+    String getDocTitular();
+
+    default String getBancoFormatado() {
+        return String.format("%03d", getBanco());
+    }
+
+    default String getAgenciaFormatado() {
+        return String.format("%04d", getAgencia());
+    }
+
     default String getNumeroDigito() {
-        return getNumero() + "-" + getDigito();
+        return String.format("%4d-%1d", getNumero(), getDigito());
     }
 
     default DadosConta getDadosConta() {
         return new DadosConta(getTipo(), getBanco(), getAgencia(), getNumero(), getDigito());
     }
-
-    String getNomeTitular();
-
-    String getDocTitular();
 }
