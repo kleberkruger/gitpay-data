@@ -8,14 +8,13 @@ import com.google.cloud.firestore.Transaction;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class BancoFirestoreRepository extends FirestoreRepository<Banco, Integer> implements BancoRepository {
 
     public static final String COLLECTION_NAME = "bancos";
 
     public BancoFirestoreRepository() {
-        super(COLLECTION_NAME);
+        super(db.collection(COLLECTION_NAME));
     }
 
     @Override

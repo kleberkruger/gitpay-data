@@ -18,7 +18,8 @@ public class UsuarioFirestoreRepository extends FirestoreRepository<Usuario<? ex
     public static final String COLLECTION_NAME = "usuarios";
 
     public UsuarioFirestoreRepository() {
-        super("bancos/" + Banco.GitPay.getCodigoFormatado() + "/usuarios");
+        super(db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado())
+                .collection(COLLECTION_NAME));
     }
 
     @Override

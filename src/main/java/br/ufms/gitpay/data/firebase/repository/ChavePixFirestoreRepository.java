@@ -15,7 +15,7 @@ public class ChavePixFirestoreRepository extends FirestoreRepository<ChavePix, S
     public static final String COLLECTION_NAME = "chavesPix";
 
     public ChavePixFirestoreRepository() {
-        super(COLLECTION_NAME);
+        super(db.collection(COLLECTION_NAME));
     }
 
     @Override

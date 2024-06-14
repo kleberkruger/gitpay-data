@@ -18,7 +18,8 @@ public class TransacaoFirestoreRepository extends FirestoreRepository<Transacao,
     public static final String COLLECTION_NAME = "transacoes";
 
     public TransacaoFirestoreRepository() {
-        super("bancos/" + Banco.GitPay.getCodigoFormatado() + "/transacoes");
+        super(db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado())
+                .collection(COLLECTION_NAME));
     }
 
     @Override
@@ -50,7 +51,7 @@ public class TransacaoFirestoreRepository extends FirestoreRepository<Transacao,
                 }
                 default -> throw new UnsupportedOperationException("Tipo de transação não suportado");
             }
-            var transacaoRef = db.collection(collectionName).document();
+            var transacaoRef = collection.document();
             transaction.create(transacaoRef, entityToMap(transacao));
             return transacaoRef;
 

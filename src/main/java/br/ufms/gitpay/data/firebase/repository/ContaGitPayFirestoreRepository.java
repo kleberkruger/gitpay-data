@@ -53,7 +53,7 @@ public class ContaGitPayFirestoreRepository extends ContaFirestoreRepository<Con
     public CompletableFuture<ContaGitPay> save(ContaGitPay contaGitPay) {
         return toCompletableFuture(db.runTransaction(transaction -> {
             var numeroConta = getNumeroConta(transaction);
-            var contaRef = db.collection(collectionName).document(numeroConta + "-pg");
+            var contaRef = collection.document(numeroConta + "-pg");
             new UsuarioFirestoreRepository().save(transaction, contaGitPay.getUsuario());
             transaction.create(contaRef, entityToMap(contaGitPay));
             transaction.update(contaRef, "numero", numeroConta);
@@ -78,7 +78,7 @@ public class ContaGitPayFirestoreRepository extends ContaFirestoreRepository<Con
             if (conta.isPresent()) {
                 return toCompletableFuture(db.runTransaction(transaction -> {
                     new UsuarioFirestoreRepository().delete(transaction, conta.get().getUsuario().getDocumento());
-                    transaction.delete(db.collection(collectionName).document(idToStr(dadosConta)));
+                    transaction.delete(collection.document(idToStr(dadosConta)));
                     return null;
                 }));
             } else {

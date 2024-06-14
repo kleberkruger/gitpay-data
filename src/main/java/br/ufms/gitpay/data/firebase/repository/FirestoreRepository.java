@@ -20,22 +20,22 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
     protected static final Firestore db = FirebaseConfig.getFirestore();
 
     // Substituir collectionName pela CollectionReference??
-    protected final String collectionName;
+    protected final CollectionReference collection;
 
-    public FirestoreRepository(String collectionName) {
-        this.collectionName = collectionName;
+    public FirestoreRepository(CollectionReference collectionName) {
+        this.collection = collectionName;
     }
 
     private CompletableFuture<Entity> add(Entity entity) {
-        return toCompletableFuture(db.collection(collectionName).add(entityToMap(entity)))
+        return toCompletableFuture(collection.add(entityToMap(entity)))
                 .thenCompose(docRef -> toCompletableFuture(docRef.get())
                         .thenCompose(this::documentToEntity));
     }
 
     private CompletableFuture<Entity> update(String id, Entity entity) {
-        return toCompletableFuture(db.collection(collectionName).document(id).set(entityToMap(entity)))
+        return toCompletableFuture(collection.document(id).set(entityToMap(entity)))
 //                .thenApply(writeResult -> entity);
-                .thenCompose(writeResult -> toCompletableFuture(db.collection(collectionName).document(id).get())
+                .thenCompose(writeResult -> toCompletableFuture(collection.document(id).get())
                         .thenCompose(this::documentToEntity));
     }
 
@@ -47,20 +47,19 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
 
     protected DocumentReference save(Transaction transaction, Entity entity) {
         var id = getId(entity);
-        var entityRef = id.map(s -> db.collection(collectionName).document(s))
-                .orElseGet(() -> db.collection(collectionName).document());
+        var entityRef = id.map(collection::document).orElseGet(collection::document);
         transaction.create(entityRef, entityToMap(entity));
         return entityRef;
     }
 
     @Override
     public CompletableFuture<Void> delete(Id id) {
-        return toCompletableFuture(db.collection(collectionName).document(idToStr(id)).delete())
+        return toCompletableFuture(collection.document(idToStr(id)).delete())
                 .thenApply(writeResult -> null);
     }
 
     protected void delete(Transaction transaction, Id id) {
-        transaction.delete(db.collection(collectionName).document(idToStr(id)));
+        transaction.delete(collection.document(idToStr(id)));
     }
 
     protected CompletableFuture<Optional<Entity>> get(DocumentReference docRef) {
@@ -71,12 +70,12 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
 
     @Override
     public CompletableFuture<Optional<Entity>> get(Id id) {
-        return get(db.collection(collectionName).document(idToStr(id)));
+        return get(collection.document(idToStr(id)));
     }
 
     @Override
     public CompletableFuture<Collection<Entity>> getAll() {
-        return toCompletableFuture(db.collection(collectionName).get())
+        return toCompletableFuture(collection.get())
                 .thenCompose(queryDocumentSnapshots -> {
                     List<CompletableFuture<Entity>> futures = queryDocumentSnapshots.getDocuments().stream()
                             .map(this::documentToEntity)
@@ -141,6 +140,10 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
 
     public Date toDate(LocalDateTime dateToConvert) {
         return Date.from(dateToConvert.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public CollectionReference getCollection() {
+        return collection;
     }
 
     protected abstract Optional<String> getId(Entity entity);

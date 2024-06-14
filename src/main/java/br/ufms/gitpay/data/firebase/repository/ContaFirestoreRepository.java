@@ -11,7 +11,8 @@ public abstract class ContaFirestoreRepository<C extends ContaBancaria> extends 
     public static final String COLLECTION_NAME = "contas";
 
     protected ContaFirestoreRepository(int banco) {
-        super("bancos/" + String.format("%03d", banco) + "/contas");
+        super(db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(String.format("%03d", banco))
+                .collection(COLLECTION_NAME));
     }
 
     @Override
