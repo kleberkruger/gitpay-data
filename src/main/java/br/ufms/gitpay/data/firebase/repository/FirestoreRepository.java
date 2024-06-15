@@ -19,7 +19,6 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
 
     protected static final Firestore db = FirebaseConfig.getFirestore();
 
-    // Substituir collectionName pela CollectionReference??
     protected final CollectionReference collection;
 
     public FirestoreRepository(CollectionReference collectionName) {
@@ -34,8 +33,8 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
 
     private CompletableFuture<Entity> update(String id, Entity entity) {
         return toCompletableFuture(collection.document(id).set(entityToMap(entity)))
-//                .thenApply(writeResult -> entity);
-                .thenCompose(writeResult -> toCompletableFuture(collection.document(id).get())
+//                .thenApply(r -> entity);
+                .thenCompose(r -> toCompletableFuture(collection.document(id).get())
                         .thenCompose(this::documentToEntity));
     }
 
@@ -147,8 +146,6 @@ public abstract class FirestoreRepository<Entity, Id> implements Repository<Enti
     }
 
     protected abstract Optional<String> getId(Entity entity);
-
-    protected abstract CollectionReference getCollection(Entity entity);
 
     protected String idToStr(Id id) {
         return String.valueOf(id);

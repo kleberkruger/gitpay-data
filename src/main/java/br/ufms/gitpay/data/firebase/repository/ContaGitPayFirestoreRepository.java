@@ -58,16 +58,8 @@ public class ContaGitPayFirestoreRepository extends ContaFirestoreRepository<Con
             transaction.create(contaRef, entityToMap(contaGitPay));
             transaction.update(contaRef, "numero", numeroConta);
             return contaRef;
-        })).thenCompose(contaRef -> toCompletableFuture(contaRef.get()).thenCompose(this::documentToEntity));
-
-
-//        return toCompletableFuture(db.runTransaction(transaction -> {
-//            new UsuarioFirestoreRepository().save(transaction, contaGitPay.getUsuario());
-//            var contaRef = db.collection(collectionName).document(idToStr(contaGitPay.getDadosConta()));
-//            transaction.create(contaRef, entityToMap(contaGitPay));
-//            transaction.update(contaRef, "numero", 5);
-//            return contaRef;
-//        })).thenCompose(transRef -> toCompletableFuture(transRef.get()).thenCompose(this::documentToEntity));
+        })).thenCompose(contaRef -> toCompletableFuture(contaRef.get())
+                .thenCompose(this::documentToEntity));
     }
 
     @Override

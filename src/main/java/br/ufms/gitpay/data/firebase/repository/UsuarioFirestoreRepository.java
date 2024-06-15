@@ -3,7 +3,6 @@ package br.ufms.gitpay.data.firebase.repository;
 import br.ufms.gitpay.data.repository.UsuarioRepository;
 import br.ufms.gitpay.domain.model.banco.Banco;
 import br.ufms.gitpay.domain.model.usuario.*;
-import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 
 import java.time.*;
@@ -25,12 +24,6 @@ public class UsuarioFirestoreRepository extends FirestoreRepository<Usuario<? ex
     @Override
     protected Optional<String> getId(Usuario<? extends Pessoa> usuario) {
         return Optional.of(usuario.getDocumento());
-    }
-
-    @Override
-    protected CollectionReference getCollection(Usuario<? extends Pessoa> usuario) {
-        return db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado())
-                .collection(COLLECTION_NAME);
     }
 
     @Override

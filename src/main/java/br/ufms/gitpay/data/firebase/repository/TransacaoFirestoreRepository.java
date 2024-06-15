@@ -27,12 +27,6 @@ public class TransacaoFirestoreRepository extends FirestoreRepository<Transacao,
         return transacao.getId();
     }
 
-    @Override
-    protected CollectionReference getCollection(Transacao transacao) {
-        return db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado())
-                .collection(COLLECTION_NAME);
-    }
-
     private void atualizarSaldo(Transaction transaction, ContaBancaria conta) {
         if (conta instanceof ContaGitPay c) {
             transaction.update(getContaRef(conta), "saldo", c.getSaldo());

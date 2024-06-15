@@ -23,11 +23,6 @@ public class BancoFirestoreRepository extends FirestoreRepository<Banco, Integer
     }
 
     @Override
-    protected CollectionReference getCollection(Banco banco) {
-        return db.collection(COLLECTION_NAME);
-    }
-
-    @Override
     protected String idToStr(Integer id) {
         return String.format("%03d", id);
     }

@@ -14,21 +14,26 @@ import java.util.concurrent.CompletableFuture;
 public class BancoService {
 
     private final Repositories repositories;
+    private final BancoRepository bancos;
+    private final ChavePixRepository chavesPix;
 
     public BancoService(Repositories repositories) {
         this.repositories = repositories;
+
+        this.bancos = repositories.getBancoRepository();
+        this.chavesPix = repositories.getChavePixRepository();
     }
 
     public CompletableFuture<Optional<Banco>> getBanco(int codigo) {
-        return repositories.getBancoRepository().get(codigo);
+        return bancos.get(codigo);
     }
 
     public CompletableFuture<Collection<Banco>> getBancos() {
-        return repositories.getBancoRepository().getAll();
+        return bancos.getAll();
     }
 
     public CompletableFuture<Optional<ContaBancaria>> getConta(String chavePix) {
-        return repositories.getChavePixRepository().get(chavePix).thenApply(chavePixOpt -> chavePixOpt.map(ChavePix::getContaBancaria));
+        return chavesPix.get(chavePix).thenApply(chavePixOpt -> chavePixOpt.map(ChavePix::getContaBancaria));
     }
 
     public CompletableFuture<Optional<ContaBancaria>> getConta(int numero, int digito) {

@@ -3,7 +3,6 @@ package br.ufms.gitpay.data.firebase.repository;
 import br.ufms.gitpay.data.repository.ChavePixRepository;
 import br.ufms.gitpay.domain.model.banco.Banco;
 import br.ufms.gitpay.domain.model.conta.*;
-import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 
@@ -21,11 +20,6 @@ public class ChavePixFirestoreRepository extends FirestoreRepository<ChavePix, S
     @Override
     protected Optional<String> getId(ChavePix chavePix) {
         return Optional.of(chavePix.getChave());
-    }
-
-    @Override
-    protected CollectionReference getCollection(ChavePix chavePix) {
-        return db.collection(COLLECTION_NAME);
     }
 
     private DocumentReference getContaRef(ContaBancaria conta) {
