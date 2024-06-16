@@ -4,7 +4,7 @@ public interface ContaBancaria {
 
     TipoConta getTipo();
 
-    int getBanco();
+    String getBanco();
 
     int getAgencia();
 
@@ -15,10 +15,6 @@ public interface ContaBancaria {
     String getNomeTitular();
 
     String getDocTitular();
-
-    default String getBancoFormatado() {
-        return String.format("%03d", getBanco());
-    }
 
     default String getAgenciaFormatado() {
         return String.format("%04d", getAgencia());

@@ -4,25 +4,39 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.Objects;
 
 public class Validador {
 
     public static void validarNomePessoa(String nome) {
         validarNuloTamanho("Nome", nome, 3, 50);
+        validarPorExpressaoRegular("Nome", nome, "^[a-zA-ZÀ-ÖØ-öø-ÿ -]+$");
     }
 
+    // FIXME: melhorar esta implementação. [Exemplo: valor '!' pode?]
     public static void validarNomeEmpresa(String nome) {
         validarNuloTamanho("Nome", nome, 1, 50);
     }
 
     public static void validarRazaoSocial(String razaoSocial) {
-        validarNuloTamanho("Razão Social", razaoSocial, 0, 50);
+        validarRazaoSocial(razaoSocial, false);
+    }
+
+    // FIXME: melhorar esta implementação. [Exemplo: valor '!?:' pode?]
+    public static void validarRazaoSocial(String razaoSocial, boolean opcional) {
+        if (opcional && (razaoSocial == null || razaoSocial.trim().isEmpty())) return;
+
+        validarNuloTamanho("Razão Social", razaoSocial, opcional ? 0 : 3, 50);
     }
 
     public static void validarUsuario(String nome) {
-        validarNuloTamanho("Nome de usuário", nome, 3, 50);
+        String usuarioRegex = "^(?!.*([._])\\1)(?!.*\\.$)(?!^\\.)[a-zA-Z0-9_]+(?:[._][a-zA-Z0-9_]+)*_?$";
+
+        validarNuloTamanho("Nome de usuário", nome, 3, 30);
+        validarPorExpressaoRegular("Nome de usuário", nome, usuarioRegex);
     }
 
+    // FIXME: melhorar este método
     public static void validarData(String data) {
         if (data.matches("^\\d{8}$")) {
             data = data.substring(0, 2) + "/" + data.substring(2, 4) + "/" + data.substring(4, 8);
@@ -36,17 +50,30 @@ public class Validador {
     }
 
     public static void validarDataNascimento(LocalDate data) {
-        if (data.isAfter(LocalDate.now()) || data.isBefore(LocalDate.now().minusYears(200))) {
+        if (data.isAfter(LocalDate.now()) || data.isBefore(LocalDate.now().minusYears(150))) {
             throw new IllegalArgumentException("Data de nascimento inválida");
         }
     }
 
     public static void validarTelefone(String telefone) {
-        validarNuloTamanho("Telefone", telefone, 10, 11);
+        validarTelefone(telefone, false);
+    }
+
+    public static void validarTelefone(String telefone, boolean opcional) {
+        if (opcional && (telefone == null || telefone.trim().isEmpty())) return;
+
+        validarNuloTamanho("Telefone", telefone, !isCelular(telefone) ? 10 : 11);
     }
 
     public static void validarEmail(String email) {
-        validarNuloTamanho("Email", email, 5, 50);
+        validarEmail(email, false);
+    }
+
+    public static void validarEmail(String email, boolean opcional) {
+        if (opcional && (email == null || email.trim().isEmpty())) return;
+
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+        validarPorExpressaoRegular("Email", email, emailRegex);
     }
 
     public static void validarSenha(String senha) {
@@ -55,17 +82,16 @@ public class Validador {
 
     public static void validarSenhaNumerica(String senha) {
         validarNuloTamanho("Senha", senha, 3, 50);
+        validarSomenteNumeros("Senha", senha);
     }
 
     public static void validarCPF(String cpf) {
-        validarNuloTamanho("CPF", cpf, 11, 11);
-
         if (cpf == null || !cpf.matches("\\d{11}|\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
-            throw new IllegalArgumentException("Formato inválido");
+            throw new IllegalArgumentException("CPF em formato inválido: " + cpf);
         }
         cpf = cpf.replaceAll("\\D", "");
         if (cpf.matches("(\\d)\\1{10}")) {
-            throw new IllegalArgumentException("Formato inválido");
+            throw new IllegalArgumentException("CPF em formato inválido: " + cpf);
         }
         int[] digitos = cpf.chars().map(Character::getNumericValue).toArray();
 
@@ -78,7 +104,7 @@ public class Validador {
         int digitoVerificador1 = (resto < 2) ? 0 : 11 - resto;
 
         if (digitos[9] != digitoVerificador1) {
-            throw new IllegalArgumentException("CPF inválido");
+            throw new IllegalArgumentException("CPF inválido: " + cpf);
         }
 
         soma = 0;
@@ -95,14 +121,12 @@ public class Validador {
     }
 
     public static void validarCNPJ(String cnpj) {
-        validarNuloTamanho("CNPJ", cnpj, 14, 14);
-
         if (cnpj == null || !cnpj.matches("\\d{14}|\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}")) {
-            throw new IllegalArgumentException("Formato inválido");
+            throw new IllegalArgumentException("CNPJ em formato inválido: " + cnpj);
         }
         cnpj = cnpj.replaceAll("\\D", "");
         if (cnpj.matches("(\\d)\\1{13}")) {
-            throw new IllegalArgumentException("Formato inválido");
+            throw new IllegalArgumentException("CNPJ em formato inválido: " + cnpj);
         }
         int[] digitos = cnpj.chars().map(Character::getNumericValue).toArray();
 
@@ -118,7 +142,7 @@ public class Validador {
         int digitoVerificador1 = (soma % 11 < 2) ? 0 : 11 - (soma % 11);
 
         if (digitos[12] != digitoVerificador1) {
-            throw new IllegalArgumentException("CNPJ inválido");
+            throw new IllegalArgumentException("CNPJ inválido: " + cnpj);
         }
 
         soma = 0;
@@ -139,13 +163,17 @@ public class Validador {
 
     public static void validarCodigoBanco(int codigo) {
         if (codigo < 1 || codigo > 999) {
-            throw new IllegalArgumentException("Código invalido");
+            throw new IllegalArgumentException("Código de banco inválido: " + codigo);
         }
     }
 
     public static void validarCodigoBanco(String codigo) {
-        validarNuloTamanho("Código do banco", codigo, 1, 3);
-        validarPorExpressaoRegular("Código do banco", codigo, "\\d{1,3}");
+        validarSomenteNumeros("Código de banco", codigo);
+        validarCodigoBanco(Integer.parseInt(codigo));
+    }
+
+    private static void validarNuloTamanho(String atributo, String valor, int tamanho) {
+        validarNuloTamanho(atributo, valor, tamanho, tamanho);
     }
 
     private static void validarNuloTamanho(String atributo, String valor, int min, int max) {
@@ -158,9 +186,21 @@ public class Validador {
         }
     }
 
-    private static void validarPorExpressaoRegular(String atributo, String valor, String expressao) {
-        if (!valor.matches(expressao)) {
-            throw new IllegalArgumentException(atributo + " em formato inválido");
+    private static void validarSomenteNumeros(String atributo, String valor) {
+        if (!valor.matches("^\\d+$")) {
+            throw new IllegalArgumentException(atributo + " inválido: " + valor);
         }
+    }
+
+    private static void validarPorExpressaoRegular(String atributo, String valor, String expressao) {
+        Objects.requireNonNull(valor, atributo + " nulo");
+
+        if (!valor.matches(expressao)) {
+            throw new IllegalArgumentException(atributo + " em formato inválido: " + valor);
+        }
+    }
+
+    private static boolean isCelular(String numero) {
+        return numero.length() > 2 && numero.charAt(2) == '9';
     }
 }

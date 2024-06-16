@@ -41,11 +41,12 @@ public class BancoService {
     }
 
     public CompletableFuture<Optional<ContaBancaria>> getConta(DadosConta dadosConta) {
-        var contaRepository = repositories.getContaRepository(dadosConta.banco());
-        if (dadosConta.banco() != Banco.GitPay.getCodigo()) {
-            contaRepository.get(dadosConta);
-        }
-
-        return contaRepository.get(dadosConta).thenApply(contaGitPay -> Optional.of(contaGitPay.get()));
+//        var contaRepository = repositories.getContaRepository(dadosConta.banco());
+//        if (dadosConta.banco() != Banco.GitPay.getCodigo()) {
+//            contaRepository.get(dadosConta);
+//        }
+//
+//        return contaRepository.get(dadosConta).thenApply(contaGitPay -> Optional.of(contaGitPay.get()));
+        return null;
     }
 }

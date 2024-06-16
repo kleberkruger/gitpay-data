@@ -15,11 +15,10 @@ import java.util.stream.Collectors;
 
 public class TransacaoFirestoreRepository extends FirestoreRepository<Transacao, String> implements TransacaoRepository {
 
-    public static final String COLLECTION_NAME = "transacoes";
+//    public static final String COLLECTION_NAME = "transacoes";
 
     public TransacaoFirestoreRepository() {
-        super(db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado())
-                .collection(COLLECTION_NAME));
+        super(FirestoreReferences.getTransacaoCollection());
     }
 
     @Override
@@ -54,10 +53,9 @@ public class TransacaoFirestoreRepository extends FirestoreRepository<Transacao,
 
     @Override
     public CompletableFuture<Collection<Transacao>> getAll(int numeroConta) {
-        var bancoRef = db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado());
-        var contaRef = getContaRef(Banco.GitPay.getCodigoFormatado(), numeroConta, TipoConta.CONTA_PAGAMENTO);
+        var contaRef = FirestoreReferences.getContaGitPayDocument(numeroConta);
 
-        Query query = bancoRef.collection(COLLECTION_NAME).where(Filter.or(
+        Query query = FirestoreReferences.getTransacaoCollection().where(Filter.or(
                 Filter.equalTo("origem", contaRef),
                 Filter.equalTo("destino", contaRef)
         ));
@@ -74,13 +72,7 @@ public class TransacaoFirestoreRepository extends FirestoreRepository<Transacao,
     }
 
     private DocumentReference getContaRef(ContaBancaria conta) {
-        return getContaRef(conta.getBancoFormatado(), conta.getNumero(), conta.getTipo());
-    }
-
-    private DocumentReference getContaRef(String codigoBanco, int numeroConta, TipoConta tipoConta) {
-        String contaId = numeroConta + "-" + tipoConta.getAbreviacao();
-        return db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(codigoBanco)
-                .collection(ContaFirestoreRepository.COLLECTION_NAME).document(contaId);
+        return FirestoreReferences.getContaDocument(conta.getDadosConta());
     }
 
     private ContaFirestoreRepository<? extends ContaBancaria> getContaRepository(DocumentReference contaRef) {
@@ -88,8 +80,8 @@ public class TransacaoFirestoreRepository extends FirestoreRepository<Transacao,
         if (contaRef == null || (bancoRef = contaRef.getParent().getParent()) == null) {
             return null;
         }
-        var bancoId = Integer.parseInt(bancoRef.getId());
-        return bancoId == Banco.GitPay.getCodigo() ? new ContaGitPayFirestoreRepository() :
+        var bancoId = bancoRef.getId();
+        return bancoId.equals(Banco.GitPay.getCodigo()) ? new ContaGitPayFirestoreRepository() :
                 new ContaExternaFirestoreRepository(bancoId);
     }
 

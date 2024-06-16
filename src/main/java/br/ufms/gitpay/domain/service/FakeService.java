@@ -34,7 +34,7 @@ public class FakeService {
         return contaRepository.save(conta);
     }
 
-    public CompletableFuture<Void> excluirConta(int codigoBanco, int numeroConta, TipoConta tipoConta) {
+    public CompletableFuture<Void> excluirConta(String codigoBanco, int numeroConta, TipoConta tipoConta) {
         return contaRepository.delete(new DadosConta(tipoConta, codigoBanco, 0, numeroConta, 0));
     }
 

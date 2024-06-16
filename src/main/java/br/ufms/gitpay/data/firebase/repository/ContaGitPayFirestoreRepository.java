@@ -23,12 +23,12 @@ public class ContaGitPayFirestoreRepository extends ContaFirestoreRepository<Con
     }
 
     private DocumentReference getUsuarioRef(Usuario<? extends Pessoa> usuario) {
-        return db.collection("bancos/" + Banco.GitPay.getCodigoFormatado() + "/usuarios")
+        return db.collection("bancos/" + Banco.GitPay.getCodigo() + "/usuarios")
                 .document(usuario.getDocumento());
     }
 
     private CompletableFuture<Integer> getProximoNumeroConta(Transaction transaction) {
-        var bancoRef = db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado());
+        var bancoRef = FirestoreReferences.getBancoGitPayDocument();
         var indiceConta = "indiceConta";
 
         return toCompletableFuture(transaction.get(bancoRef))
@@ -42,7 +42,7 @@ public class ContaGitPayFirestoreRepository extends ContaFirestoreRepository<Con
 
     private int getNumeroConta(Transaction transaction) throws ExecutionException, InterruptedException {
         var campo = "indiceConta";
-        var bancoRef = db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado());
+        var bancoRef = FirestoreReferences.getBancoGitPayDocument();
         var doc = transaction.get(bancoRef).get();
         var numero = doc.contains(campo) ? Math.toIntExact(Objects.requireNonNull(doc.getLong(campo))) : 0;
         transaction.update(bancoRef, campo, ++numero);

@@ -8,6 +8,7 @@ import br.ufms.gitpay.domain.model.usuario.Usuario;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ContaGitPay implements ContaBancaria {
 
@@ -23,9 +24,9 @@ public class ContaGitPay implements ContaBancaria {
     }
 
     public ContaGitPay(int numero, Usuario<? extends Pessoa> usuario) {
+        this.usuario = Objects.requireNonNull(usuario, "Usuário nulo");
         this.numero = numero;
         this.digito = digitoVerificador(numero);
-        this.usuario = usuario;
         this.saldo = 0.00;
         this.limite = 0.00;
         this.saldoInvestimentos = new HashMap<>();
@@ -37,7 +38,7 @@ public class ContaGitPay implements ContaBancaria {
     }
 
     @Override
-    public int getBanco() {
+    public String getBanco() {
         return Banco.GitPay.getCodigo();
     }
 

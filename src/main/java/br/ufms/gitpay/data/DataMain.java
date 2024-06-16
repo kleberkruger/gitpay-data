@@ -61,7 +61,7 @@ public class DataMain {
         System.out.println("Inicializando aplicação...");
 
         try {
-            ContaExterna contaBB = new ContaExterna(TipoConta.CONTA_CORRENTE, 1, 552, 16942, 0,
+            ContaExterna contaBB = new ContaExterna(TipoConta.CONTA_CORRENTE, "001", 552, 16942, 0,
                     "Kleber Kruger", "02135730165");
             ContaGitPay contaGitPay = new ContaGitPay(1, Usuario.criarPessoaFisica(
                     "Kleber Kruger", "02135730165", "67996122809", "kleberkruger@gmail.com",

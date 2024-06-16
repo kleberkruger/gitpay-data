@@ -11,10 +11,10 @@ import java.util.concurrent.CompletableFuture;
 
 public class ChavePixFirestoreRepository extends FirestoreRepository<ChavePix, String> implements ChavePixRepository {
 
-    public static final String COLLECTION_NAME = "chavesPix";
+//    public static final String COLLECTION_NAME = "chavesPix";
 
     public ChavePixFirestoreRepository() {
-        super(db.collection(COLLECTION_NAME));
+        super(FirestoreReferences.getChavePixCollection());
     }
 
     @Override
@@ -23,7 +23,7 @@ public class ChavePixFirestoreRepository extends FirestoreRepository<ChavePix, S
     }
 
     private DocumentReference getContaRef(ContaBancaria conta) {
-        return db.collection("bancos/" + conta.getBancoFormatado() + "/contas")
+        return db.collection("bancos/" + conta.getBanco() + "/contas")
                 .document(conta.getNumero() + "-" + conta.getTipo().getAbreviacao());
     }
 
@@ -41,8 +41,8 @@ public class ChavePixFirestoreRepository extends FirestoreRepository<ChavePix, S
         if (contaRef == null || (bancoRef = contaRef.getParent().getParent()) == null) {
             return null;
         }
-        var bancoId = Integer.parseInt(bancoRef.getId());
-        return bancoId == Banco.GitPay.getCodigo() ? new ContaGitPayFirestoreRepository() :
+        var bancoId = bancoRef.getId();
+        return bancoId.equals(Banco.GitPay.getCodigo()) ? new ContaGitPayFirestoreRepository() :
                 new ContaExternaFirestoreRepository(bancoId);
     }
 

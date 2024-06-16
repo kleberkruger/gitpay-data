@@ -2,7 +2,7 @@ package br.ufms.gitpay.domain.model.conta;
 
 public class ContaExterna implements ContaBancaria {
 
-    private final int banco;
+    private final String banco;
     private final int agencia;
     private final int numero;
     private final int digito;
@@ -10,7 +10,7 @@ public class ContaExterna implements ContaBancaria {
     private final String nomeTitular;
     private final String documentoTitular;
 
-    public ContaExterna(TipoConta tipo, int banco, int agencia, int numero, int digito,
+    public ContaExterna(TipoConta tipo, String banco, int agencia, int numero, int digito,
                         String nomeTitular, String documentoTitular) {
         this.banco = banco;
         this.agencia = agencia;
@@ -27,7 +27,7 @@ public class ContaExterna implements ContaBancaria {
     }
 
     @Override
-    public int getBanco() {
+    public String getBanco() {
         return banco;
     }
 

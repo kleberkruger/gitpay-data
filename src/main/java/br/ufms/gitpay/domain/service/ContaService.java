@@ -79,7 +79,7 @@ public class ContaService {
         return transferir(TipoConta.CONTA_PAGAMENTO, Banco.GitPay.getCodigo(), 1, numero, digito, null, valor);
     }
 
-    public CompletableFuture<Transferencia> transferir(TipoConta tipo, int banco, int agencia, int numero, int digito,
+    public CompletableFuture<Transferencia> transferir(TipoConta tipo, String banco, int agencia, int numero, int digito,
                                                        String documento, double valor) {
 
         var usuario = Usuario.criarPessoaFisica("Kleber Kruger", "02135730165", "67996122809",

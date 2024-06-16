@@ -11,15 +11,15 @@ import java.util.concurrent.CompletableFuture;
 
 public class BancoFirestoreRepository extends FirestoreRepository<Banco, Integer> implements BancoRepository {
 
-    public static final String COLLECTION_NAME = "bancos";
+//    public static final String COLLECTION_NAME = "bancos";
 
     public BancoFirestoreRepository() {
-        super(db.collection(COLLECTION_NAME));
+        super(FirestoreReferences.getBancoCollection());
     }
 
     @Override
     protected Optional<String> getId(Banco banco) {
-        return Optional.of(banco.getCodigoFormatado());
+        return Optional.of(banco.getCodigo());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class BancoFirestoreRepository extends FirestoreRepository<Banco, Integer
     @Override
     protected Map<String, Object> entityToMap(Banco banco) {
         Map<String, Object> data = new HashMap<>();
-        data.put("codigo", banco.getCodigoFormatado());
+        data.put("codigo", banco.getCodigo());
         data.put("nome", banco.getNome());
         data.put("razaoSocial", banco.getRazaoSocial());
         return data;

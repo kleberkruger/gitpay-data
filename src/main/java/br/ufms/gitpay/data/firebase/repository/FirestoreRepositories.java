@@ -14,7 +14,7 @@ public class FirestoreRepositories implements Repositories {
     private final BancoFirestoreRepository bancoRepository;
     private final UsuarioFirestoreRepository usuarioRepository;
     private final ChavePixFirestoreRepository chavePixRepository;
-    private final Map<Integer, ContaRepository<? extends ContaBancaria>> contaRepositoryMap;
+    private final Map<String, ContaRepository<? extends ContaBancaria>> contaRepositoryMap;
     private final TransacaoRepository transacaoRepository;
 
     public FirestoreRepositories() {
@@ -38,13 +38,6 @@ public class FirestoreRepositories implements Repositories {
     @Override
     public ChavePixRepository getChavePixRepository() {
         return chavePixRepository;
-    }
-
-    @Override
-    public ContaRepository<? extends ContaBancaria> getContaRepository(int numeroConta) {
-        return contaRepositoryMap.computeIfAbsent(numeroConta, k -> k == Banco.GitPay.getCodigo() ?
-                new ContaGitPayFirestoreRepository() :
-                new ContaExternaFirestoreRepository(k));
     }
 
     @Override

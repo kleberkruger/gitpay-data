@@ -14,11 +14,10 @@ import java.util.concurrent.CompletableFuture;
 
 public class UsuarioFirestoreRepository extends FirestoreRepository<Usuario<? extends Pessoa>, String> implements UsuarioRepository {
 
-    public static final String COLLECTION_NAME = "usuarios";
+//    public static final String COLLECTION_NAME = "usuarios";
 
     public UsuarioFirestoreRepository() {
-        super(db.collection(BancoFirestoreRepository.COLLECTION_NAME).document(Banco.GitPay.getCodigoFormatado())
-                .collection(COLLECTION_NAME));
+        super(FirestoreReferences.getUsuarioCollection());
     }
 
     @Override

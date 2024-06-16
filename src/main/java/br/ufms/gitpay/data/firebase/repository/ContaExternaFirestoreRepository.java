@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ContaExternaFirestoreRepository extends ContaFirestoreRepository<ContaExterna> implements ContaExternaRepository {
 
-    public ContaExternaFirestoreRepository(int banco) {
+    public ContaExternaFirestoreRepository(String banco) {
         super(banco);
         if (banco == Banco.GitPay.getCodigo()) {
             throw new IllegalArgumentException("Este repositório não acessa contas GitPay");
@@ -29,7 +29,7 @@ public class ContaExternaFirestoreRepository extends ContaFirestoreRepository<Co
     protected CompletableFuture<ContaExterna> documentToEntity(DocumentSnapshot doc) {
         return CompletableFuture.completedFuture(new ContaExterna(
                 TipoConta.valueOf(doc.getString("tipo")),
-                toInt(doc.getLong("banco")),
+                doc.getString("banco"),
                 toInt(doc.getLong("agencia")),
                 toInt(doc.getLong("numero")),
                 toInt(doc.getLong("digito")),

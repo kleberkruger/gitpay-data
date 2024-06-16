@@ -10,7 +10,7 @@ public interface Repositories {
 
     ChavePixRepository getChavePixRepository();
 
-    ContaRepository<? extends ContaBancaria> getContaRepository(int numeroBanco);
+//    ContaRepository<? extends ContaBancaria> getContaRepository(int numeroBanco);
 
     TransacaoRepository getTransacaoRepository();
 }
