@@ -61,15 +61,6 @@ public class Conta2FirestoreRepository extends FirestoreRepository<ContaBancaria
     protected CompletableFuture<ContaBancaria> documentToEntity(DocumentSnapshot doc) {
         String banco = doc.getString("banco");
 
-        ContaExterna c1 = new ContaExterna(TipoConta.CONTA_CORRENTE, "001", 552, 16942, 0,
-                "Kleber Kruger", "02135730165");
-        ContaGitPay c2 = new ContaGitPay(1, Usuario.criarPessoaFisica(
-                "Kleber Kruger", "02135730165", "67996122809", "kleberkruger@gmail.com",
-                LocalDate.of(1988, 12, 8), "123", LocalDateTime.now()));
-
-        CompletableFuture<ContaBancaria> f1 = CompletableFuture.completedFuture(c1);
-        CompletableFuture<ContaBancaria> f2 = CompletableFuture.completedFuture(c2);
-
         if (banco.equals(Banco.GitPay.getCodigo())) {
             var usuarioRef = doc.get("usuario", DocumentReference.class);
             if (usuarioRef == null) {
