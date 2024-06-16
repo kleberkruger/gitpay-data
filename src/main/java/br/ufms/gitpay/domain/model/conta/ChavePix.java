@@ -12,10 +12,12 @@ public class ChavePix {
 
     public ChavePix(TipoChavePix tipo, String chave, ContaBancaria dadosConta) {
         Objects.requireNonNull(tipo, "O tipo da chave pix não pode ser nulo");
+        Objects.requireNonNull(tipo, "Os dados da conta não pode ser nulo");
+
         this.tipo = tipo;
         switch (tipo) {
-            case TELEFONE -> Validador.validarTelefone(chave);
-            case EMAIL -> Validador.validarEmail(chave);
+            case TELEFONE -> Validador.validarTelefone(chave, true);
+            case EMAIL -> Validador.validarEmail(chave, true);
             case CPF -> Validador.validarCPF(chave);
             case CNPJ -> Validador.validarCNPJ(chave);
         }

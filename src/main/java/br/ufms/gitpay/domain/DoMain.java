@@ -1,10 +1,8 @@
 package br.ufms.gitpay.domain;
 
 import br.ufms.gitpay.data.firebase.repository.*;
-import br.ufms.gitpay.domain.model.banco.Banco;
 import br.ufms.gitpay.domain.model.conta.ContaGitPay;
 import br.ufms.gitpay.domain.model.usuario.Usuario;
-import br.ufms.gitpay.domain.service.BancoService;
 import br.ufms.gitpay.domain.service.ContaService;
 import br.ufms.gitpay.domain.util.Validador;
 
@@ -15,9 +13,6 @@ public class DoMain {
 
     public static void main(String[] args) {
         try {
-
-            Banco banco = new Banco(111, "hehe", "haha");
-            System.out.println(banco.getCodigo());
 
             Validador.validarUsuario("kl.le_be.r.ho..tm");
 

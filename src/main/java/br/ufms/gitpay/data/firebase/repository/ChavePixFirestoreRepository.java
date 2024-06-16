@@ -24,7 +24,7 @@ public class ChavePixFirestoreRepository extends FirestoreRepository<ChavePix, S
 
     private DocumentReference getContaRef(ContaBancaria conta) {
         return db.collection("bancos/" + conta.getBanco() + "/contas")
-                .document(conta.getNumero() + "-" + conta.getTipo().getAbreviacao());
+                .document(conta.getNumero() + "-" + conta.getTipoConta().getAbreviacao());
     }
 
     @Override

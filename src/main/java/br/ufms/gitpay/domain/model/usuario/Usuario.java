@@ -55,9 +55,15 @@ public class Usuario<P extends Pessoa> {
         return Objects.hash(dados, senha, dataHoraCadastro);
     }
 
-    public static Usuario<PessoaFisica> criarPessoaFisica(String nome, String cpf, String telefone, String email,
-                                                          LocalDate dataNascimento, String senha, LocalDateTime dataCadastro) {
-
+    public static Usuario<PessoaFisica> criarPessoaFisica(
+            String nome,
+            String cpf,
+            String telefone,
+            String email,
+            LocalDate dataNascimento,
+            String senha,
+            LocalDateTime dataCadastro
+    ) {
         PessoaFisica pf = new PessoaFisica(nome, cpf);
         pf.setTelefone(telefone);
         pf.setEmail(email);
@@ -66,8 +72,15 @@ public class Usuario<P extends Pessoa> {
         return new Usuario<>(pf, senha, dataCadastro);
     }
 
-    public static Usuario<PessoaJuridica> criarPessoaJuridica(String nome, String razaoSocial, String cnpj, String telefone,
-                                                              String email, String senha, LocalDateTime dataCadastro) {
+    public static Usuario<PessoaJuridica> criarPessoaJuridica(
+            String nome,
+            String razaoSocial,
+            String cnpj,
+            String telefone,
+            String email,
+            String senha,
+            LocalDateTime dataCadastro
+    ) {
         PessoaJuridica pj = new PessoaJuridica(nome, cnpj);
         pj.setRazaoSocial(razaoSocial);
         pj.setTelefone(telefone);

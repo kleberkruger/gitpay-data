@@ -28,7 +28,7 @@ public class Conta2FirestoreRepository extends FirestoreRepository<ContaBancaria
 
     @Override
     protected Optional<String> getId(ContaBancaria conta) {
-        return Optional.of(conta.getNumero() + "-" + conta.getTipo().getAbreviacao());
+        return Optional.of(conta.getNumero() + "-" + conta.getTipoConta().getAbreviacao());
     }
 
     private DocumentReference getUsuarioRef(Usuario<? extends Pessoa> usuario) {
@@ -39,7 +39,7 @@ public class Conta2FirestoreRepository extends FirestoreRepository<ContaBancaria
     protected Map<String, Object> entityToMap(ContaBancaria conta) {
         Map<String, Object> data = new HashMap<>();
 
-        data.put("tipo", conta.getTipo());
+        data.put("tipo", conta.getTipoConta());
         data.put("banco", conta.getBanco());
         data.put("agencia", conta.getAgencia());
         data.put("numero", conta.getNumero());

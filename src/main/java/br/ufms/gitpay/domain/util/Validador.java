@@ -8,32 +8,39 @@ import java.util.Objects;
 
 public class Validador {
 
-    public static void validarNomePessoa(String nome) {
+    public static String validarNomePessoa(String nome) {
         validarNuloTamanho("Nome", nome, 3, 50);
         validarPorExpressaoRegular("Nome", nome, "^[a-zA-ZÀ-ÖØ-öø-ÿ -]+$");
+
+        return nome.trim();
     }
 
     // FIXME: melhorar esta implementação. [Exemplo: valor '!' pode?]
-    public static void validarNomeEmpresa(String nome) {
+    public static String validarNomeEmpresa(String nome) {
         validarNuloTamanho("Nome", nome, 1, 50);
+        return nome.trim();
     }
 
-    public static void validarRazaoSocial(String razaoSocial) {
-        validarRazaoSocial(razaoSocial, false);
+    public static String validarRazaoSocial(String razaoSocial) {
+        validarRazaoSocial(razaoSocial, true);
+        return razaoSocial.trim();
     }
 
     // FIXME: melhorar esta implementação. [Exemplo: valor '!?:' pode?]
-    public static void validarRazaoSocial(String razaoSocial, boolean opcional) {
-        if (opcional && (razaoSocial == null || razaoSocial.trim().isEmpty())) return;
+    public static String validarRazaoSocial(String razaoSocial, boolean required) {
+        if (!required && (razaoSocial == null || razaoSocial.trim().isEmpty())) return "";
 
-        validarNuloTamanho("Razão Social", razaoSocial, opcional ? 0 : 3, 50);
+        validarNuloTamanho("Razão Social", razaoSocial, !required ? 0 : 3, 50);
+        return razaoSocial.trim();
     }
 
-    public static void validarUsuario(String nome) {
+    public static String validarUsuario(String nome) {
         String usuarioRegex = "^(?!.*([._])\\1)(?!.*\\.$)(?!^\\.)[a-zA-Z0-9_]+(?:[._][a-zA-Z0-9_]+)*_?$";
 
         validarNuloTamanho("Nome de usuário", nome, 3, 30);
         validarPorExpressaoRegular("Nome de usuário", nome, usuarioRegex);
+
+        return nome.trim();
     }
 
     // FIXME: melhorar este método
@@ -55,25 +62,31 @@ public class Validador {
         }
     }
 
-    public static void validarTelefone(String telefone) {
-        validarTelefone(telefone, false);
+    public static String validarTelefone(String telefone) {
+        return validarTelefone(telefone, true);
     }
 
-    public static void validarTelefone(String telefone, boolean opcional) {
-        if (opcional && (telefone == null || telefone.trim().isEmpty())) return;
+    public static String validarTelefone(String telefone, boolean required) {
+        if (!required && (telefone == null || telefone.trim().isEmpty())) return "";
 
-        validarNuloTamanho("Telefone", telefone, !isCelular(telefone) ? 10 : 11);
+        boolean isCelular = isCelular(telefone);
+        validarNuloTamanho("Telefone", telefone, !isCelular ? 10 : 11);
+        validarPorExpressaoRegular("Telefone", telefone, !isCelular ? "^\\d{11}$" : "^\\d{10}$");
+
+        return telefone.trim();
     }
 
-    public static void validarEmail(String email) {
-        validarEmail(email, false);
+    public static String validarEmail(String email) {
+        return validarEmail(email, true);
     }
 
-    public static void validarEmail(String email, boolean opcional) {
-        if (opcional && (email == null || email.trim().isEmpty())) return;
+    public static String validarEmail(String email, boolean required) {
+        if (!required && (email == null || email.trim().isEmpty())) return "";
 
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         validarPorExpressaoRegular("Email", email, emailRegex);
+
+        return email;
     }
 
     public static void validarSenha(String senha) {
@@ -161,22 +174,35 @@ public class Validador {
         }
     }
 
-    public static void validarCodigoBanco(int codigo) {
-        if (codigo < 1 || codigo > 999) {
-            throw new IllegalArgumentException("Código de banco inválido: " + codigo);
+    public static void validarIntervaloNumero(String atributo, double numero, double min, double max) {
+        if (numero < min || numero > max) {
+            throw new IllegalArgumentException(atributo + " inválido: " + numero);
         }
     }
 
+    public static void validarCodigoBanco(int codigo) {
+        validarIntervaloNumero("Código de banco", codigo, 1, 999);
+    }
+
     public static void validarCodigoBanco(String codigo) {
-        validarSomenteNumeros("Código de banco", codigo);
+        validarNuloEmBranco("Código de banco", codigo);
+        validarSomenteNumeros("Código de banco", codigo, true);
         validarCodigoBanco(Integer.parseInt(codigo));
     }
 
-    private static void validarNuloTamanho(String atributo, String valor, int tamanho) {
+
+    public static void validarNuloEmBranco(String atributo, String valor) {
+        valor = valor != null ? valor.trim() : "";
+        if (valor.isEmpty()) {
+            throw new IllegalArgumentException(atributo + " nulo ou em branco");
+        }
+    }
+
+    public static void validarNuloTamanho(String atributo, String valor, int tamanho) {
         validarNuloTamanho(atributo, valor, tamanho, tamanho);
     }
 
-    private static void validarNuloTamanho(String atributo, String valor, int min, int max) {
+    public static void validarNuloTamanho(String atributo, String valor, int min, int max) {
         valor = valor != null ? valor.trim() : "";
         if (min > 0 && valor.isEmpty()) {
             throw new IllegalArgumentException(atributo + " nulo ou em branco");
@@ -186,13 +212,18 @@ public class Validador {
         }
     }
 
-    private static void validarSomenteNumeros(String atributo, String valor) {
-        if (!valor.matches("^\\d+$")) {
+    public static void validarSomenteNumeros(String atributo, String valor) {
+        validarSomenteNumeros(atributo, valor, false);
+    }
+
+    public static void validarSomenteNumeros(String atributo, String valor, boolean unsigned) {
+        String regex = unsigned ? "^[+-]?\\d+$" : "^\\d+$";
+        if (!valor.matches(regex)) {
             throw new IllegalArgumentException(atributo + " inválido: " + valor);
         }
     }
 
-    private static void validarPorExpressaoRegular(String atributo, String valor, String expressao) {
+    public static void validarPorExpressaoRegular(String atributo, String valor, String expressao) {
         Objects.requireNonNull(valor, atributo + " nulo");
 
         if (!valor.matches(expressao)) {

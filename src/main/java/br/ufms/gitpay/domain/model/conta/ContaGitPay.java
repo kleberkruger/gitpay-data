@@ -18,6 +18,7 @@ public class ContaGitPay implements ContaBancaria {
     private double saldo;
     private double limite;
     private final Map<TipoInvestimento, Double> saldoInvestimentos;
+    private final DadosConta dados;
 
     public ContaGitPay(Usuario<? extends Pessoa> usuario) {
         this(0, usuario);
@@ -30,10 +31,12 @@ public class ContaGitPay implements ContaBancaria {
         this.saldo = 0.00;
         this.limite = 0.00;
         this.saldoInvestimentos = new HashMap<>();
+
+        this.dados = new DadosConta(TipoConta.CONTA_PAGAMENTO, Banco.GitPay.getCodigo(), 1, numero, digito);
     }
 
     @Override
-    public TipoConta getTipo() {
+    public TipoConta getTipoConta() {
         return TipoConta.CONTA_PAGAMENTO;
     }
 
@@ -69,6 +72,11 @@ public class ContaGitPay implements ContaBancaria {
     @Override
     public String getDocTitular() {
         return usuario.getDocumento();
+    }
+
+    @Override
+    public DadosConta getDadosConta() {
+        return dados;
     }
 
     public double getSaldo() {

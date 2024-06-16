@@ -14,7 +14,7 @@ public abstract class ContaFirestoreRepository<C extends ContaBancaria> extends 
 
     @Override
     protected Optional<String> getId(C conta) {
-        return Optional.of(conta.getNumero() + "-" + conta.getTipo().getAbreviacao());
+        return Optional.of(conta.getNumero() + "-" + conta.getTipoConta().getAbreviacao());
     }
 
     @Override
@@ -25,7 +25,7 @@ public abstract class ContaFirestoreRepository<C extends ContaBancaria> extends 
     @Override
     protected Map<String, Object> entityToMap(C conta) {
         Map<String, Object> data = new HashMap<>();
-        data.put("tipo", conta.getTipo());
+        data.put("tipo", conta.getTipoConta());
         data.put("banco", conta.getBanco());
         data.put("agencia", conta.getAgencia());
         data.put("numero", conta.getNumero());
