@@ -17,11 +17,10 @@ public abstract class Pessoa {
     }
 
     public void setNome(String nome) {
-        switch (getTipo()) {
-            case PESSOA_FISICA -> Validador.validarNomePessoa(nome);
+        this.nome = switch (getTipo()) {
+            case PESSOA_FISICA -> Validador.validarNomePessoa(nome, true);
             case PESSOA_JURIDICA -> Validador.validarNomeEmpresa(nome);
-        }
-        this.nome = nome;
+        };
     }
 
     public String getTelefone() {

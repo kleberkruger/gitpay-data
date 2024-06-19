@@ -9,41 +9,51 @@ import java.util.Objects;
 public class Validador {
 
     public static String validarNomePessoa(String nome) {
+        return validarNomePessoa(nome, false);
+    }
+
+    // nulo, tamanho, caracteres permitidos, se tem sobrenome, obrigatório
+    public static String validarNomePessoa(String nome, boolean completo) {
         validarNuloTamanho("Nome", nome, 3, 50);
         validarPorExpressaoRegular("Nome", nome, "^[a-zA-ZÀ-ÖØ-öø-ÿ -]+$");
-
+        if (completo && nome.split(" ").length < 2) {
+            throw new IllegalArgumentException("Nome incompleto. Informe ao menos um sobrenome");
+        }
         return nome.trim();
     }
 
-    // FIXME: melhorar esta implementação. [Exemplo: valor '!' pode?]
+    // nulo, tamanho, obrigatório
     public static String validarNomeEmpresa(String nome) {
         validarNuloTamanho("Nome", nome, 1, 50);
+//        validarPorExpressaoRegular("Nome", nome, ".*[\\p{L}].*");
         return nome.trim();
     }
 
     public static String validarRazaoSocial(String razaoSocial) {
-        validarRazaoSocial(razaoSocial, true);
-        return razaoSocial.trim();
+        return validarRazaoSocial(razaoSocial, true);
     }
 
-    // FIXME: melhorar esta implementação. [Exemplo: valor '!?:' pode?]
+    // nulo, tamanho, não obrigatório, se tem alguma letra pelos menos
     public static String validarRazaoSocial(String razaoSocial, boolean required) {
-        if (!required && (razaoSocial == null || razaoSocial.trim().isEmpty())) return "";
+        if (!required && (razaoSocial == null || razaoSocial.trim().isEmpty())) return razaoSocial;
 
         validarNuloTamanho("Razão Social", razaoSocial, !required ? 0 : 3, 50);
+        validarPorExpressaoRegular("Razão Social", razaoSocial, ".*[\\p{L}].*");
         return razaoSocial.trim();
     }
 
+    // nulo, tamanho, caracteres permitidos, obrigatório
     public static String validarUsuario(String nome) {
         String usuarioRegex = "^(?!.*([._])\\1)(?!.*\\.$)(?!^\\.)[a-zA-Z0-9_]+(?:[._][a-zA-Z0-9_]+)*_?$";
 
         validarNuloTamanho("Nome de usuário", nome, 3, 30);
         validarPorExpressaoRegular("Nome de usuário", nome, usuarioRegex);
 
-        return nome.trim();
+        return nome;
     }
 
     // FIXME: melhorar este método
+    // nulo, formato correto
     public static void validarData(String data) {
         if (data.matches("^\\d{8}$")) {
             data = data.substring(0, 2) + "/" + data.substring(2, 4) + "/" + data.substring(4, 8);
@@ -56,6 +66,7 @@ public class Validador {
         }
     }
 
+    // nulo
     public static void validarDataNascimento(LocalDate data) {
         if (data.isAfter(LocalDate.now()) || data.isBefore(LocalDate.now().minusYears(150))) {
             throw new IllegalArgumentException("Data de nascimento inválida");
@@ -66,6 +77,7 @@ public class Validador {
         return validarTelefone(telefone, true);
     }
 
+    // nulo, formato e caracteres permitidos, obrigatório
     public static String validarTelefone(String telefone, boolean required) {
         if (!required && (telefone == null || telefone.trim().isEmpty())) return "";
 
@@ -76,6 +88,7 @@ public class Validador {
         return telefone.trim();
     }
 
+    // nulo, formato e caracteres permitidos, obrigatório
     public static String validarEmail(String email) {
         return validarEmail(email, true);
     }
@@ -89,10 +102,12 @@ public class Validador {
         return email;
     }
 
+    // nulo, tamanho, caracteres permitidos e caracteres obrigatórios
     public static void validarSenha(String senha) {
         validarNuloTamanho("Senha", senha, 3, 50);
     }
 
+    // nulo, tamanho, caracteres permitidos e caracteres obrigatórios
     public static void validarSenhaNumerica(String senha) {
         validarNuloTamanho("Senha", senha, 3, 50);
         validarSomenteNumeros("Senha", senha);
@@ -233,5 +248,13 @@ public class Validador {
 
     private static boolean isCelular(String numero) {
         return numero.length() > 2 && numero.charAt(2) == '9';
+    }
+
+    public static void main(String[] args) {
+        try {
+            validarCPF("  021.357.301-65");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

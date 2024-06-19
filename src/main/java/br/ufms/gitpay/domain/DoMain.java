@@ -13,9 +13,6 @@ public class DoMain {
 
     public static void main(String[] args) {
         try {
-
-            Validador.validarUsuario("kl.le_be.r.ho..tm");
-
             ContaGitPay conta = new ContaGitPay(1, Usuario.criarPessoaFisica(
                     "Kleber Kruger", "02135730165", "67996122809", "kleberkruger@gmail.com",
                     LocalDate.of(1988, 12, 8), "123", LocalDateTime.now()));

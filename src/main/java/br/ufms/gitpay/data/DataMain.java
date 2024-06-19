@@ -1,6 +1,7 @@
 package br.ufms.gitpay.data;
 
 import br.ufms.gitpay.data.firebase.repository.*;
+import br.ufms.gitpay.domain.model.banco.Banco;
 import br.ufms.gitpay.domain.model.conta.*;
 import br.ufms.gitpay.domain.model.transacao.Transacao;
 import br.ufms.gitpay.domain.model.transacao.Transferencia;
@@ -23,36 +24,36 @@ public class DataMain {
                     return null;
                 }).join();
 
-//        I id = getId.apply(entity);
-//
-//        repository.get(id)
-//                .thenAccept(opt -> opt.ifPresentOrElse(e -> System.out.println("get: " + printer.apply(e) + " encontrado."),
-//                        () -> System.out.println("get: " + id + " objeto não encontrado.")))
-//                .exceptionally(ex -> {
-//                    System.err.println("get:\n" + ex.getMessage());
-//                    return null;
-//                }).join();
-//
-//        repository.getAll()
-//                .thenAccept(list -> {
-//                    System.out.print("getAll: [");
-//                    var elements = list.stream().toList();
-//                    for (int i = 0; i < elements.size(); i++) {
-//                        System.out.printf("%s%s", i > 0 ? ", " : "", printer.apply(elements.get(i)));
-//                    }
-//                    System.out.println("]");
-//                })
-//                .exceptionally(ex -> {
-//                    System.err.println("getAll: " + ex.getMessage());
-//                    return null;
-//                }).join();
+        I id = getId.apply(entity);
 
-//        repository.delete(id)
-//                .thenAccept(e -> System.out.println("delete: " + id + " deletado com sucesso."))
-//                .exceptionally(ex -> {
-//                    System.err.println("delete: " + ex.getMessage());
-//                    return null;
-//                }).join();
+        repository.get(id)
+                .thenAccept(opt -> opt.ifPresentOrElse(e -> System.out.println("get: " + printer.apply(e) + " encontrado."),
+                        () -> System.out.println("get: " + id + " objeto não encontrado.")))
+                .exceptionally(ex -> {
+                    System.err.println("get:\n" + ex.getMessage());
+                    return null;
+                }).join();
+
+        repository.getAll()
+                .thenAccept(list -> {
+                    System.out.print("getAll: [");
+                    var elements = list.stream().toList();
+                    for (int i = 0; i < elements.size(); i++) {
+                        System.out.printf("%s%s", i > 0 ? ", " : "", printer.apply(elements.get(i)));
+                    }
+                    System.out.println("]");
+                })
+                .exceptionally(ex -> {
+                    System.err.println("getAll: " + ex.getMessage());
+                    return null;
+                }).join();
+
+        repository.delete(id)
+                .thenAccept(e -> System.out.println("delete: " + id + " deletado com sucesso."))
+                .exceptionally(ex -> {
+                    System.err.println("delete: " + ex.getMessage());
+                    return null;
+                }).join();
 
         System.out.println("----------------------------------------\n");
     }
@@ -63,13 +64,13 @@ public class DataMain {
         try {
             ContaExterna contaBB = new ContaExterna(TipoConta.CONTA_CORRENTE, "001", 552, 16942, 0,
                     "Kleber Kruger", "02135730165");
-            ContaGitPay contaGitPay = new ContaGitPay(1, Usuario.criarPessoaFisica(
-                    "Kleber Kruger", "02135730165", "67996122809", "kleberkruger@gmail.com",
-                    LocalDate.of(1988, 12, 8), "123", LocalDateTime.now()));
+//            ContaGitPay contaGitPay = new ContaGitPay(1, Usuario.criarPessoaFisica(
+//                    "Kleber Kruger", "02135730165", "67996122809", "kleberkruger@gmail.com",
+//                    LocalDate.of(1988, 12, 8), "123", LocalDateTime.now()));
 
 //            testarRepository(
 //                    new BancoFirestoreRepository(),
-//                    Banco.GitPay,
+//                    new Banco("015", "RuBank", "Rubank Chata do Caralho!"),
 //                    Banco::getCodigo,
 //                    Banco::getNome
 //            );
@@ -141,21 +142,21 @@ public class DataMain {
 //                    }
 //            );
 
-            ContaGitPay conta2 = new ContaGitPay(2, Usuario.criarPessoaFisica(
-                    "Kleber Kruger", "02135730165", "67996122809", "kleberkruger@gmail.com",
-                    LocalDate.of(1988, 12, 8), "123", LocalDateTime.now()));
-
-            ContaGitPay conta3 = new ContaGitPay(Usuario.criarPessoaFisica(
-                    "Ana Rubia Schneider", "07148648114", "67996122809", "rubiaschneider.ars@gmail.com",
-                    LocalDate.of(2004, 10, 15), "123", LocalDateTime.now()));
-
-            new ContaGitPayFirestoreRepository().save(conta3)
-                    .thenAccept(c -> System.out.println("save: " + c.getUsuario().getDados().getNome()))
-                    .exceptionally(ex -> {
-                        System.err.println("save: " + ex.getMessage());
-                        return null;
-                    })
-                    .join();
+//            ContaGitPay conta2 = new ContaGitPay(2, Usuario.criarPessoaFisica(
+//                    "Kleber Kruger", "02135730165", "67996122809", "kleberkruger@gmail.com",
+//                    LocalDate.of(1988, 12, 8), "123", LocalDateTime.now()));
+//
+//            ContaGitPay conta3 = new ContaGitPay(Usuario.criarPessoaFisica(
+//                    "Ana Rubia Schneider", "07148648114", "67996122809", "rubiaschneider.ars@gmail.com",
+//                    LocalDate.of(2004, 10, 15), "123", LocalDateTime.now()));
+//
+//            new ContaGitPayFirestoreRepository().save(conta3)
+//                    .thenAccept(c -> System.out.println("save: " + c.getUsuario().getDados().getNome()))
+//                    .exceptionally(ex -> {
+//                        System.err.println("save: " + ex.getMessage());
+//                        return null;
+//                    })
+//                    .join();
 
 //            new ContaGitPayFirestoreRepository().delete(conta3.getDadosConta())
 //                    .thenAccept(c -> System.out.println(conta3.getDadosConta().numero() + " detetada com sucesso"))

@@ -26,7 +26,7 @@ public class FakeService {
         return bancoRepository.save(banco);
     }
 
-    public CompletableFuture<Void> excluirBanco(int codigo) {
+    public CompletableFuture<Void> excluirBanco(String codigo) {
         return bancoRepository.delete(codigo);
     }
 

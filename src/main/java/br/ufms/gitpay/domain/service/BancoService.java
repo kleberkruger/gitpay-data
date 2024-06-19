@@ -24,7 +24,7 @@ public class BancoService {
         this.chavesPix = repositories.getChavePixRepository();
     }
 
-    public CompletableFuture<Optional<Banco>> getBanco(int codigo) {
+    public CompletableFuture<Optional<Banco>> getBanco(String codigo) {
         return bancos.get(codigo);
     }
 

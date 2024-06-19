@@ -9,7 +9,7 @@ import com.google.cloud.firestore.Transaction;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class BancoFirestoreRepository extends FirestoreRepository<Banco, Integer> implements BancoRepository {
+public class BancoFirestoreRepository extends FirestoreRepository<Banco, String> implements BancoRepository {
 
 //    public static final String COLLECTION_NAME = "bancos";
 
@@ -23,7 +23,7 @@ public class BancoFirestoreRepository extends FirestoreRepository<Banco, Integer
     }
 
     @Override
-    protected String idToStr(Integer id) {
+    protected String idToStr(String id) {
         return String.format("%03d", id);
     }
 

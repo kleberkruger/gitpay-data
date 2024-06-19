@@ -8,10 +8,9 @@ import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class Conta2FirestoreRepository extends FirestoreRepository<ContaBancaria, DadosConta> {
 
@@ -79,7 +78,16 @@ public class Conta2FirestoreRepository extends FirestoreRepository<ContaBancaria
         );
     }
 
-    public CompletableFuture<Collection<ContaBancaria>> getAll(int codigoBanco) {
-        return super.getAll();
+    public CompletableFuture<Collection<ContaBancaria>> getAll(String codigoBanco) {
+        return toCompletableFuture(FirestoreReferences.getContaCollection(codigoBanco).get())
+                .thenCompose(queryDocumentSnapshots -> {
+                    List<CompletableFuture<ContaBancaria>> futures = queryDocumentSnapshots.getDocuments().stream()
+                            .map(this::documentToEntity)
+                            .toList();
+                    return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                            .thenApply(v -> futures.stream()
+                                    .map(CompletableFuture::join)
+                                    .collect(Collectors.toList()));
+                });
     }
 }

@@ -1,5 +1,6 @@
 package br.ufms.gitpay.domain.model.conta;
 
+import br.ufms.gitpay.domain.model.usuario.TipoPessoa;
 import br.ufms.gitpay.domain.util.Validador;
 
 import java.util.Objects;
@@ -23,23 +24,23 @@ public class ContaExterna implements ContaBancaria {
 
     public ContaExterna(TipoConta tipo, String banco, int agencia, int numero, int digito,
                         String nomeTitular, String documentoTitular) {
-
         Objects.requireNonNull(tipo, "O tipo da conta não pode ser nulo");
-        switch (getTipoPessoa()) {
+
+        TipoPessoa tipoPessoa = documentoTitular.length() == 11 ? TipoPessoa.PESSOA_FISICA : TipoPessoa.PESSOA_JURIDICA;
+        switch (tipoPessoa) {
             case PESSOA_FISICA -> {
-                Validador.validarNomePessoa(nomeTitular);
+                nomeTitular = Validador.validarNomePessoa(nomeTitular, true);
                 Validador.validarCPF(documentoTitular);
             }
             case PESSOA_JURIDICA -> {
-                Validador.validarNomeEmpresa(nomeTitular);
+                nomeTitular = Validador.validarNomeEmpresa(nomeTitular);
                 Validador.validarCNPJ(documentoTitular);
             }
         }
         Validador.validarCodigoBanco(banco);
         Validador.validarIntervaloNumero("Agência", agencia, 1, 99999);
         Validador.validarIntervaloNumero("Número de conta", numero, 1, 99999999);
-        Validador.validarIntervaloNumero("Dígito", numero, 0, 9);
-        Validador.validarIntervaloNumero("Dígito", numero, 0, 9);
+        Validador.validarIntervaloNumero("Dígito", digito, 0, 9);
 
         this.banco = banco;
         this.agencia = agencia;
