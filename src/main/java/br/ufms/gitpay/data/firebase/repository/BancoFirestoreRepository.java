@@ -2,9 +2,7 @@ package br.ufms.gitpay.data.firebase.repository;
 
 import br.ufms.gitpay.data.repository.BancoRepository;
 import br.ufms.gitpay.domain.model.banco.Banco;
-import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Transaction;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;

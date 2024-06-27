@@ -83,7 +83,7 @@ public class Validador {
 
         boolean isCelular = isCelular(telefone);
         validarNuloTamanho("Telefone", telefone, !isCelular ? 10 : 11);
-        validarPorExpressaoRegular("Telefone", telefone, !isCelular ? "^\\d{11}$" : "^\\d{10}$");
+        validarPorExpressaoRegular("Telefone", telefone, !isCelular ? "^\\d{10}$" : "^\\d{11}$");
 
         return telefone.trim();
     }
